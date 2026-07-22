@@ -1,219 +1,752 @@
-/* =========================
-   Matrix Background
-========================= */
-
-const canvas = document.getElementById("code");
-const ctx = canvas.getContext("2d");
-
-function resizeCanvas() {
-  canvas.width = window.innerWidth;
-
-  canvas.height = window.innerHeight;
-}
-
-resizeCanvas();
-
-window.addEventListener("resize", resizeCanvas);
-
-const letters = "01 DATA AI CODE".split("");
-
-const fontSize = 13;
-
-let columns = Math.floor(canvas.width / fontSize);
-
-let drops = Array(columns).fill(1);
-
-function drawMatrix() {
-  ctx.fillStyle = "rgba(0,0,0,0.03)";
-
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  ctx.fillStyle = "rgba(0,247,255,0.20)";
-
-  ctx.font = fontSize + "px monospace";
-
-  for (let i = 0; i < drops.length; i++) {
-    const text = letters[Math.floor(Math.random() * letters.length)];
-
-    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-    if (drops[i] * fontSize > canvas.height && Math.random() > 0.98) {
-      drops[i] = 0;
-    }
-
-    drops[i]++;
-  }
-}
-
-setInterval(drawMatrix, 80);
-
-/* =========================
-        EmailJS
-========================= */
-
-document.addEventListener("DOMContentLoaded", function () {
-  emailjs.init("hhxgoyeEfEqFF-TxH");
-
-  const form = document.getElementById("contact-form");
-
-  if (form) {
-    form.addEventListener("submit", function (event) {
-      event.preventDefault();
-
-      emailjs
-        .send("service_emran", "template_y6hwt0b", {
-          name: this.name.value,
-
-          email: this.email.value,
-
-          message: this.message.value,
-        })
-
-        .then(() => {
-          alert("Message sent successfully!");
-
-          this.reset();
-        })
-
-        .catch((error) => {
-          console.log(error);
-
-          alert("Failed to send message.");
-        });
-    });
-  }
-});
-
-/* =========================
-       Welcome Screen
-========================= */
-
-window.addEventListener("load", function () {
-  const screen = document.getElementById("welcome-screen");
-
-  const typingEl = document.getElementById("typing-text");
-
-  if (!screen || !typingEl) return;
-
-  const text = "Welcome to Emran Azizi Portfolio";
-
-  let index = 0;
-
-  function typeText() {
-    if (index < text.length) {
-      typingEl.innerHTML += text.charAt(index);
-
-      index++;
-
-      setTimeout(typeText, 55);
-    }
-  }
-
-  typeText();
-
-  setTimeout(() => {
-    typingEl.classList.add("glitch");
-  }, 1200);
-
-  setTimeout(() => {
-    typingEl.classList.remove("glitch");
-
-    typingEl.innerHTML = "System Ready";
-  }, 2500);
-
-  setTimeout(() => {
-    screen.style.opacity = "0";
-
-    setTimeout(() => {
-      screen.style.display = "none";
-
-      document.body.classList.add("loaded");
-    }, 800);
-  }, 3800);
-});
-
-/* ==========================================
-   PROJECT FULL SCREEN SLIDE CONTROL
-========================================== */
-
-document.addEventListener("DOMContentLoaded", function () {
-  const trigger = document.getElementById("projects-trigger");
-  const projectScreen = document.getElementById("projects-screen");
-
-  if (!trigger || !projectScreen) return;
-
-  let opened = false;
-
-  function openProjects() {
-    if (opened) return;
-
-    projectScreen.classList.add("show");
-
-    opened = true;
-  }
-
-  function closeProjects() {
-    if (!opened) return;
-
-    projectScreen.classList.remove("show");
-
-    opened = false;
-  }
-
-  /*
-       Detect when Projects section arrives
-    */
-
-  const observer = new IntersectionObserver(
-    function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          openProjects();
-        }
-      });
-    },
-    {
-      threshold: 0.6,
-    },
-  );
-
-  observer.observe(trigger);
-
-  /*
-       Control scrolling inside project slide
-    */
-
-  projectScreen.addEventListener("wheel", function (event) {
-    const atTop = projectScreen.scrollTop <= 0;
-
-    const atBottom =
-      projectScreen.scrollTop + projectScreen.clientHeight >=
-      projectScreen.scrollHeight - 5;
-
-    /*
-          Scroll up from top
-          return to Experience
-        */
-
-    if (event.deltaY < 0 && atTop) {
-      closeProjects();
-
-      return;
-    }
-
-    /*
-          Scroll down from bottom
-          go to Message
-        */
-
-    if (event.deltaY > 0 && atBottom) {
-      closeProjects();
-
-      setTimeout(function () {
-        document.getElementById("contact").scrollIntoView({
-          behavior: "smooth",
-        });
-      }, 300);
-    }
-  });
-});
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Emran Azizi | Portfolio</title>
+
+    <link rel="stylesheet" href="CSS/style.css" />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <!-- WELCOME SCREEN -->
+    <div id="welcome-screen">
+      <div class="welcome-box">
+        <div id="typing-text"></div>
+
+        <div class="glow-line"></div>
+
+        <div class="loader-bar">
+          <div class="loader-fill"></div>
+        </div>
+
+        <div class="sub-text">Initializing Portfolio System...</div>
+      </div>
+    </div>
+
+    <canvas id="code"></canvas>
+
+    <!-- NAVIGATION -->
+    <nav>
+      <a href="#about">About</a>
+      <a href="#certificates">Certificates & Education</a>
+      <a href="#skills">Skills</a>
+      <a href="#experience">Experience</a>
+      <a href="#projects-trigger">Projects</a>
+      <a href="#contact">Contact & Message</a>
+    </nav>
+
+    <!-- HERO -->
+    <div class="hero" id="about">
+      <img src="profile.jpg" alt="Emran Azizi Profile" />
+
+      <h1>Emran Azizi</h1>
+
+      <div class="open-badge">
+        OPEN TO PART-TIME / STUDENT JOB (WERKSTUDENT)
+      </div>
+
+      <p>
+        I am a Software Engineering student at GISMA University of Applied
+        Sciences in Berlin, passionate about software development, artificial
+        intelligence, and creating practical technology solutions.
+      </p>
+
+      <p>
+        My interests include full-stack web development, Python programming,
+        software engineering, and continuous learning through real-world
+        projects. I enjoy solving problems, collaborating with teams, and
+        developing innovative software solutions.
+      </p>
+
+      <div class="hero-buttons">
+        <a class="btn" href="cv.pdf" target="_blank">
+          <i class="fa-solid fa-file-pdf"></i>
+          View CV
+        </a>
+
+        <a class="btn" href="https://github.com/emranazizi-web" target="_blank">
+          <i class="fa-brands fa-github"></i>
+          GitHub
+        </a>
+
+        <a
+          class="btn"
+          href="https://www.linkedin.com/in/emran-azizi-5b2409403"
+          target="_blank"
+        >
+          <i class="fa-brands fa-linkedin"></i>
+          LinkedIn
+        </a>
+      </div>
+    </div>
+    <!-- CERTIFICATES -->
+    <section id="certificates">
+      <h2>Certificates & Education</h2>
+
+      <div class="grid">
+        <div class="card">
+          <h3>🎓 High School Diploma</h3>
+
+          <p>
+            Completed secondary education with focus on science and mathematics.
+          </p>
+
+          <div class="card-footer">
+            <span class="badge"> Verified Certificate </span>
+
+            <a class="btn" href="diploma.pdf" target="_blank">
+              View Certificate
+            </a>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>💻 Foundation Course – Software Engineering</h3>
+
+          <p>
+            Foundation in software engineering, programming basics, and IT
+            fundamentals.
+          </p>
+
+          <div class="card-footer">
+            <span class="badge"> Verified Certificate </span>
+
+            <a class="btn" href="foundation-course.pdf" target="_blank">
+              View Certificate
+            </a>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>🛠 CompTIA A+ Certificate</h3>
+
+          <p>
+            Fundamentals of computer hardware, software, and troubleshooting.
+          </p>
+
+          <div class="card-footer">
+            <span class="badge"> IT Certification </span>
+
+            <a class="btn" href="computer-a+.pdf" target="_blank">
+              View Certificate
+            </a>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>🌐 CompTIA Network+ Certificate</h3>
+
+          <p>
+            Core knowledge of networking concepts, infrastructure, and IT
+            systems.
+          </p>
+
+          <div class="card-footer">
+            <span class="badge"> IT Certification </span>
+
+            <a class="btn" href="computer-n+.pdf" target="_blank">
+              View Certificate
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ACADEMIC MODULES -->
+    <section>
+      <h2>Academic Modules</h2>
+
+      <div class="card">
+        <ul>
+          <li>💻 <strong>Foundation of Computer Science</strong></li>
+          <li>🧑‍💻 <strong>Computer Science Lab</strong></li>
+          <li>📐 <strong>Mathematics for Computing</strong></li>
+          <li>🧠 <strong>Basic Programming Concepts</strong></li>
+          <li>
+            🌐 <strong>Web Development (HTML & CSS) and Python Basics</strong>
+          </li>
+          <li>🔌 <strong>IT Systems & Networking</strong></li>
+          <li>⚙️ <strong>Software Engineering Fundamentals</strong></li>
+          <li>📁 <strong>Project Management Basics</strong></li>
+          <li>✍️ <strong>Academic Writing & Research Methods</strong></li>
+          <li>🎓 <strong>Academic & Professional Development</strong></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- LANGUAGES -->
+    <section>
+      <h2>Languages</h2>
+
+      <div class="grid">
+        <div class="card">
+          Dari (Native)
+
+          <div class="progress">
+            <div class="progress-fill green" style="width: 100%"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          English B2
+
+          <div class="progress">
+            <div class="progress-fill blue" style="width: 66%"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          German B1
+
+          <div class="progress">
+            <div class="progress-fill blue" style="width: 52%"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SKILLS -->
+    <section id="skills">
+      <h2>Skills</h2>
+
+      <div class="grid">
+        <div class="card">
+          👨‍💻 Python
+
+          <div class="progress">
+            <div class="progress-fill blue" style="width: 30%"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          🌐 HTML & CSS
+
+          <div class="progress">
+            <div class="progress-fill green" style="width: 30%"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          🐙 GitHub
+
+          <div class="progress">
+            <div class="progress-fill blue" style="width: 30%"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          🤖 AI Tools
+
+          <div class="progress">
+            <div class="progress-fill green" style="width: 50%"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          📋 Project Management
+
+          <div class="progress">
+            <div class="progress-fill blue" style="width: 30%"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          🤝 Team Work
+
+          <div class="progress">
+            <div class="progress-fill green" style="width: 100%"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          ✍️ Essay & Report Writing
+
+          <div class="progress">
+            <div class="progress-fill blue" style="width: 60%"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          🛠 IT Technical Support
+
+          <div class="progress">
+            <div class="progress-fill blue" style="width: 30%"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPERIENCE -->
+    <section id="experience">
+      <h2>Experience</h2>
+
+      <div class="grid">
+        <div class="card">
+          <h3>🧑‍💻 Computer Lab Assistant</h3>
+
+          <div class="badge-wrap">
+            <span class="badge">IT Support</span>
+          </div>
+
+          <p class="desc">
+            Assisted students with basic IT and software issues, supported
+            computer lab setup, and helped maintain system functionality.
+          </p>
+
+          <div class="responsibilities">
+            <p><b>Responsibilities:</b></p>
+
+            <ul>
+              <li>System troubleshooting</li>
+              <li>Software installation support</li>
+              <li>Helping students in lab sessions</li>
+            </ul>
+          </div>
+
+          <div class="skills">
+            <p><b>Skills:</b></p>
+
+            <p>IT support, troubleshooting, communication</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>📦 Warehouse & Logistics Assistant</h3>
+
+          <div class="badge-wrap">
+            <span class="badge">Operations</span>
+          </div>
+
+          <p class="desc">
+            Supported inventory management, packaging, and organization of goods
+            in a fast-paced environment.
+          </p>
+
+          <div class="responsibilities">
+            <p><b>Responsibilities:</b></p>
+
+            <ul>
+              <li>Stock organization</li>
+              <li>Order packaging</li>
+              <li>Warehouse coordination</li>
+            </ul>
+          </div>
+
+          <div class="skills">
+            <p><b>Skills:</b></p>
+
+            <p>Teamwork, organization, time management</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>🍽️ Restaurant Worker</h3>
+
+          <div class="badge-wrap">
+            <span class="badge">Customer Service</span>
+          </div>
+
+          <p class="desc">
+            Worked in customer service and food preparation, ensuring fast
+            service and customer satisfaction.
+          </p>
+
+          <div class="responsibilities">
+            <p><b>Responsibilities:</b></p>
+
+            <ul>
+              <li>Customer support</li>
+              <li>Food preparation</li>
+              <li>Fast service handling</li>
+            </ul>
+          </div>
+
+          <div class="skills">
+            <p><b>Skills:</b></p>
+
+            <p>Communication, responsibility, teamwork under pressure</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>👨‍🎓 Project Collaboration (University)</h3>
+
+          <div class="badge-wrap">
+            <span class="badge">Academic Project</span>
+          </div>
+
+          <p class="desc">
+            Worked on group academic projects focusing on software engineering
+            basics and documentation.
+          </p>
+
+          <div class="responsibilities">
+            <p><b>Responsibilities:</b></p>
+
+            <ul>
+              <li>Group coordination</li>
+              <li>Documentation writing</li>
+              <li>Basic project planning</li>
+            </ul>
+          </div>
+
+          <div class="skills">
+            <p><b>Skills:</b></p>
+
+            <p>Teamwork, reporting, basic project management</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS TRIGGER -->
+    <section id="projects-trigger">
+      <h2>Projects</h2>
+
+      <p>
+        Scroll to explore my software engineering, university and innovation
+        projects.
+      </p>
+    </section>
+    <!-- FULL SCREEN PROJECT PANEL -->
+
+    <div id="projects-screen" class="project-overlay">
+      <div class="projects-header">
+        <h2>Project Dashboard</h2>
+
+        <p>Software Engineering • University • Personal Innovation</p>
+      </div>
+
+      <div class="projects-columns">
+        <!-- ================= CODING ================= -->
+
+        <div class="project-column">
+          <h3>👨‍💻 Coding & Development</h3>
+
+          <div class="project-grid">
+            <div class="project-card">
+              <h4>P1</h4>
+              <p>Personal portfolio website with futuristic design</p>
+              <span class="badge">HTML CSS JS</span>
+              <a class="btn" href="#">Open</a>
+            </div>
+
+            <div class="project-card">
+              <h4>P2</h4>
+              <p>Python application solving practical programming problems</p>
+              <span class="badge">Python</span>
+              <a class="btn" href="#">Open</a>
+            </div>
+
+            <div class="project-card">
+              <h4>P3</h4>
+              <p>Artificial intelligence software learning project</p>
+              <span class="badge">AI / ML</span>
+              <a class="btn" href="#">Open</a>
+            </div>
+
+            <div class="project-card">
+              <h4>P4</h4>
+              <p>Full stack web application development project</p>
+              <span class="badge">Web</span>
+              <a class="btn" href="#">Open</a>
+            </div>
+
+            <div class="project-card">
+              <h4>P5</h4>
+              <p>Database management system application project</p>
+              <span class="badge">Database</span>
+              <a class="btn" href="#">Open</a>
+            </div>
+
+            <div class="project-card">
+              <h4>P6</h4>
+              <p>Software testing and quality improvement project</p>
+              <span class="badge">Testing</span>
+              <a class="btn" href="#">Open</a>
+            </div>
+
+            <div class="project-card">
+              <h4>P7</h4>
+              <p>Mobile application prototype development project</p>
+              <span class="badge">Mobile</span>
+              <a class="btn" href="#">Open</a>
+            </div>
+
+            <div class="project-card">
+              <h4>P8</h4>
+              <p>GitHub open source contribution project</p>
+              <span class="badge">GitHub</span>
+              <a class="btn" href="#">Open</a>
+            </div>
+
+            <div class="project-card">
+              <h4>P9</h4>
+              <p>Cloud deployment and application experiment</p>
+              <span class="badge">Cloud</span>
+              <a class="btn" href="#">Open</a>
+            </div>
+
+            <div class="project-card">
+              <h4>P10</h4>
+              <p>Future software engineering innovation project</p>
+              <span class="badge">Future</span>
+              <a class="btn" href="#">Open</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= UNIVERSITY ================= -->
+
+        <div class="project-column">
+          <h3>🎓 University Projects</h3>
+
+          <div class="project-grid">
+            <div class="project-card">
+              <h4>P1</h4>
+              <p>Academic writing technology research documentation</p>
+              <span class="badge">PDF</span>
+              <a class="btn" href="academic-writing.pdf" target="_blank"
+                >Open</a
+              >
+            </div>
+
+            <div class="project-card">
+              <h4>P2</h4>
+              <p>Research methodology analysis and reporting project</p>
+              <span class="badge">Research</span>
+              <a class="btn" href="research-methodology.pdf" target="_blank"
+                >Open</a
+              >
+            </div>
+
+            <div class="project-card">
+              <h4>P3</h4>
+              <p>Software engineering university group project</p>
+              <span class="badge">SE</span>
+              <a class="btn" href="#">Open</a>
+            </div>
+
+            <div class="project-card">
+              <h4>P4</h4>
+              <p>Computer science foundation project assignment</p>
+              <span class="badge">CS</span>
+              <a class="btn" href="#">Open</a>
+            </div>
+
+            <div class="project-card">
+              <h4>P5</h4>
+              <p>Programming concepts practical implementation</p>
+              <span class="badge">Programming</span>
+              <a class="btn" href="#">Open</a>
+            </div>
+
+            <div class="project-card">
+              <h4>P6</h4>
+              <p>Web development academic coursework project</p>
+              <span class="badge">Web</span>
+              <a class="btn" href="#">Open</a>
+            </div>
+
+            <div class="project-card">
+              <h4>P7</h4>
+              <p>Networking systems research documentation project</p>
+              <span class="badge">Network</span>
+              <a class="btn" href="#">Open</a>
+            </div>
+
+            <div class="project-card">
+              <h4>P8</h4>
+              <p>Project management university documentation</p>
+              <span class="badge">Management</span>
+              <a class="btn" href="#">Open</a>
+            </div>
+
+            <div class="project-card">
+              <h4>P9</h4>
+              <p>Mathematics computing practical exercises</p>
+              <span class="badge">Math</span>
+              <a class="btn" href="#">Open</a>
+            </div>
+
+            <div class="project-card">
+              <h4>P10</h4>
+              <p>Final academic software engineering project</p>
+              <span class="badge">Final</span>
+              <a class="btn" href="#">Open</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= GENERAL ================= -->
+
+        <div class="project-column">
+          <h3>🚀 General Projects</h3>
+
+          <div class="project-grid">
+            <div class="project-card">
+              <h4>P1</h4>
+              <p>Personal innovation project development idea</p>
+              <span class="badge">Innovation</span>
+              <a class="btn" href="#">Open</a>
+            </div>
+
+            <div class="project-card">
+              <h4>P2</h4>
+              <p>Open source technology contribution project</p>
+              <span class="badge">GitHub</span>
+              <a class="btn" href="#">Open</a>
+            </div>
+
+            <div class="project-card">
+              <h4>P3</h4>
+              <p>Technology research and exploration project</p>
+              <span class="badge">Learning</span>
+              <a class="btn" href="#">Open</a>
+            </div>
+
+            <div class="project-card">
+              <h4>P4</h4>
+              <p>Future startup application concept design</p>
+              <span class="badge">Startup</span>
+              <a class="btn" href="#">Open</a>
+            </div>
+
+            <div class="project-card">
+              <h4>P5</h4>
+              <p>Automation tools productivity improvement project</p>
+              <span class="badge">Automation</span>
+              <a class="btn" href="#">Open</a>
+            </div>
+
+            <div class="project-card">
+              <h4>P6</h4>
+              <p>Cyber security learning experiment project</p>
+              <span class="badge">Security</span>
+              <a class="btn" href="#">Open</a>
+            </div>
+
+            <div class="project-card">
+              <h4>P7</h4>
+              <p>Artificial intelligence personal experiments</p>
+              <span class="badge">AI</span>
+              <a class="btn" href="#">Open</a>
+            </div>
+
+            <div class="project-card">
+              <h4>P8</h4>
+              <p>Creative technology solution development</p>
+              <span class="badge">Creative</span>
+              <a class="btn" href="#">Open</a>
+            </div>
+
+            <div class="project-card">
+              <h4>P9</h4>
+              <p>Professional skills improvement projects</p>
+              <span class="badge">Growth</span>
+              <a class="btn" href="#">Open</a>
+            </div>
+
+            <div class="project-card">
+              <h4>P10</h4>
+              <p>Future innovative software application</p>
+              <span class="badge">Future</span>
+              <a class="btn" href="#">Open</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- CONTACT SECTION -->
+    <section id="contact">
+      <h2>Contact Me</h2>
+
+      <div class="message-container">
+        <div class="message-intro">
+          <h3>🚀 Let's Work Together</h3>
+
+          <p>
+            I am currently open to student jobs, internships, and software
+            engineering opportunities. If you have a project, collaboration
+            idea, or professional opportunity, feel free to send me a message.
+          </p>
+        </div>
+
+        <div class="card message-box">
+          <h3>Send Me a Message</h3>
+
+          <form id="contact-form">
+            <input type="text" name="name" placeholder="Your Name" required />
+
+            <input
+              type="email"
+              name="email"
+              placeholder="Your Email"
+              required
+            />
+
+            <textarea
+              name="message"
+              placeholder="Write your message..."
+              rows="6"
+              required
+            ></textarea>
+
+            <button class="btn" type="submit">Send Message 🚀</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="footer-box">
+        <div class="footer-social">
+          <a
+            href="https://github.com/emranazizi-web"
+            target="_blank"
+            title="GitHub"
+          >
+            <i class="fa-brands fa-github"></i>
+          </a>
+
+          <a
+            href="https://www.linkedin.com/in/emran-azizi-5b2409403"
+            target="_blank"
+            title="LinkedIn"
+          >
+            <i class="fa-brands fa-linkedin"></i>
+          </a>
+
+          <a href="mailto:emranazizi1002@gmail.com" title="Email">
+            <i class="fa-solid fa-envelope"></i>
+          </a>
+        </div>
+
+        <div class="footer-text">
+          <span>
+            <strong>Emran Azizi</strong>
+            | Software Engineering Student | Future Software Engineer
+          </span>
+
+          <small> © 2026 Emran Azizi </small>
+        </div>
+      </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+    <script src="JavaScript/script.js"></script>
+  </body>
+</html>
