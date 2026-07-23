@@ -164,22 +164,20 @@ document.addEventListener("DOMContentLoaded", function () {
        Detect when Projects section arrives
   */
 
-const observer = new IntersectionObserver(
-  function (entries) {
-    entries.forEach(function (entry) {
+  const observer = new IntersectionObserver(
+    function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          openProjects();
+        }
+      });
+    },
 
-      if (entry.isIntersecting) {
-        openProjects();
-      } else {
-        closeProjects();
-      }
+    {
+      threshold: 0.6,
+    },
+  );
 
-    });
-  },
-  {
-    threshold: 0.9,
-  }
-);
   observer.observe(trigger);
 
   /*
