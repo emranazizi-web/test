@@ -177,7 +177,7 @@ const observer = new IntersectionObserver(
     });
   },
   {
-    threshold: 0.6,
+    threshold: 0.9,
   }
 );
   observer.observe(trigger);
