@@ -174,7 +174,7 @@ document.addEventListener("DOMContentLoaded", function () {
     },
 
     {
-      threshold: 0.6,
+      threshold: 0.9,
     },
   );
 
